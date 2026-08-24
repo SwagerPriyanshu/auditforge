@@ -1,0 +1,64 @@
+# AuditForge — TrueForge Configuration
+# =====================================
+# TrueForge is the agent harness that runs AuditForge's agent loop.
+# Start it with: npx @truefoundry/trueforge
+# Then configure these providers in the TrueForge UI.
+
+# Model provider
+model:
+  provider: openai
+  model: gpt-4o
+  # API key configured via environment variable
+
+# MCP Servers — the tools the agent can reach
+mcp_servers:
+  - name: filesystem
+    type: builtin
+    description: Read and write files on the local system
+    capabilities:
+      - read_file
+      - write_file
+      - list_directory
+      - search_files
+
+  - name: github
+    type: remote
+    url: https://mcp.github.com
+    auth:
+      type: header
+      header: Authorization
+      token_env: GITHUB_TOKEN
+    capabilities:
+      - search_repositories
+      - get_file_contents
+      - create_issue
+      - list_commits
+      - list_pull_requests
+
+# Sandbox — isolated code execution
+sandbox:
+  provider: daytona
+  # API key configured via environment variable
+  timeout_seconds: 30
+  max_memory_mb: 512
+
+# Skills — reusable instruction packs
+skills:
+  - name: incident-investigation
+    source: local
+    path: ./skills/incident-investigation/SKILL.md
+
+# Context management
+context:
+  max_tokens: 128000
+  compaction:
+    enabled: true
+    threshold: 0.8  # compact at 80% context usage
+  subagents:
+    enabled: true
+    max_concurrent: 3
+
+# Human approval — always enabled for AuditForge
+approval:
+  enabled: true
+  policy: always  # always require approval for irreversible actions

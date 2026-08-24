@@ -1,0 +1,91 @@
+# AuditForge — Risk & Policy Configuration
+# ==========================================
+# Defines risk levels, approval requirements, and audit policies.
+
+# Risk scoring rules — each action is scored 1-10
+risk_scoring:
+  rules:
+    # Tool-specific base scores
+    - pattern: "read_file"
+      base_score: 1
+      description: "Reading a file is always safe"
+
+    - pattern: "list_directory"
+      base_score: 1
+      description: "Listing directories is always safe"
+
+    - pattern: "search_files"
+      base_score: 1
+      description: "Searching files is always safe"
+
+    - pattern: "write_file"
+      base_score: 6
+      description: "Writing files can modify state"
+      modifiers:
+        - condition: "path.contains('.env')"
+          adjustment: 3  # env files are high risk
+        - condition: "path.contains('config')"
+          adjustment: 2  # config files are medium risk
+        - condition: "path.startsWith('/tmp')"
+          adjustment: -2  # temp files are lower risk
+
+    - pattern: "create_issue"
+      base_score: 5
+      description: "Creating GitHub issues affects external systems"
+
+    - pattern: "create_pull_request"
+      base_score: 8
+      description: "Creating PRs is a high-impact action"
+
+    - pattern: "merge_pull_request"
+      base_score: 10
+      description: "Merging is irreversible"
+
+    - pattern: "delete_file"
+      base_score: 8
+      description: "Deleting files is destructive"
+
+    - pattern: "execute_code"
+      base_score: 7
+      description: "Running code in sandbox can have side effects"
+
+    - pattern: "rollback_deployment"
+      base_score: 9
+      description: "Rollbacks affect production systems"
+
+# Approval thresholds
+approval:
+  # Actions below this score are auto-approved (still logged)
+  auto_approve_below: 3
+
+  # Actions at or above this score require explicit human approval
+  require_approval_above: 3
+
+  # Actions above this score are ALWAYS blocked until approved, even if the
+  # user has a general approval policy
+  critical_threshold: 8
+
+# Audit retention
+retention:
+  # How long to keep audit entries (days)
+  audit_entries_days: 365
+
+  # How long to keep attestation proofs (days)
+  attestations_days: 2555  # ~7 years
+
+  # Maximum audit entries per session
+  max_entries_per_session: 10000
+
+# Evidence requirements
+evidence:
+  # Hash algorithm for Merkle tree attestation
+  hash_algorithm: sha256
+
+  # Whether to include full tool output in evidence (can be large)
+  include_full_output: true
+
+  # Maximum output size to include (bytes) — larger outputs are truncated
+  max_output_bytes: 1048576  # 1MB
+
+  # Whether to capture tool arguments
+  capture_arguments: true
