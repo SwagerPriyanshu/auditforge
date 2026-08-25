@@ -1,0 +1,10 @@
+# Redis Connection Pool Configuration
+# Updated: 2026-08-30
+host: "redis.internal.production"
+port: 6379
+db: 0
+pool_size: 8
+max_connections: 8
+timeout_ms: 5000
+retry_strategy: "exponential_backoff"
+idle_timeout_ms: 10000
