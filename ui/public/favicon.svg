@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="afGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#A855F7" />
+    </linearGradient>
+    <linearGradient id="innerGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Shield Polygon (Dark high-contrast backing) -->
+  <path d="M16 2 L28 7 V16 C28 23.5 22.8 28.5 16 31 C9.2 28.5 4 23.5 4 16 V7 L16 2 Z" 
+        fill="#0D0E1A" 
+        stroke="url(#afGradient)" 
+        stroke-width="2.5" 
+        stroke-linejoin="round" />
+
+  <!-- Bold Geometric 'A' + Cryptographic Forge Anvil Core -->
+  <path d="M16 7 L23 20 H19.5 L18 16.5 H14 L12.5 20 H9 L16 7 Z" 
+        fill="url(#afGradient)" />
+
+  <!-- Inner Triangular Key / Core Node -->
+  <polygon points="16,11 14.5,14.5 17.5,14.5" fill="#FFFFFF" />
+
+  <!-- Bottom Verification Beacon (Emerald Emerald Anchor) -->
+  <circle cx="16" cy="24" r="2" fill="#10B981" />
+</svg>
