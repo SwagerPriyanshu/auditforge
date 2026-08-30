@@ -109,7 +109,8 @@ export class RiskEngine {
       score: rounded,
       components: { baseRisk, inputRisk, contextRisk },
       explanation: this.generateExplanation(toolName, input, rounded, baseRisk, inputRisk, contextRisk),
-      requiresApproval: rounded > 3,
+      // Require explicit approval for anything above "low" (score > 4)
+      requiresApproval: rounded > 4,
     };
   }
 
@@ -129,8 +130,9 @@ export class RiskEngine {
         `Base risk for ${toolName}: ${baseRisk}/10`,
         `Input risk: ${inputRisk}/10`,
       ],
-      autoApprove: score <= 2,
-      requiresApproval: score > 3,
+      // Scores 1-2: safe (auto-approve). 3-4: low (proceed, log). 5+: medium/high/critical (approval required).
+      autoApprove: score <= 4,
+      requiresApproval: score > 4,
       isCritical: score >= 8,
     };
   }
@@ -197,14 +199,15 @@ export class RiskEngine {
     let risk = 3;
 
     // Sensitive directories increase risk
-    if (path.includes(".env") || path.includes("secrets")) risk += 3;
+    if (path.includes(".env") || path.includes("secrets") || path.includes(".secret")) risk += 3;
     if (path.includes("config") || path.includes("etc")) risk += 2;
     if (path.includes("package.json") || path.includes("tsconfig")) risk += 2;
     if (path.startsWith("/tmp") || path.startsWith("/var/tmp")) risk -= 1;
     if (path.includes(".bak") || path.includes(".backup")) risk -= 1;
 
-    // Path traversal attempts
+    // Path traversal and null-byte injection attempts
     if (path.includes("..") || path.includes("~")) risk += 2;
+    if (path.includes("\0") || path.includes("%00")) risk += 4;
 
     return Math.min(10, Math.max(1, risk));
   }
@@ -221,6 +224,13 @@ export class RiskEngine {
     if (/\bDROP\b|\bDELETE\b|\bTRUNCATE\b/i.test(command)) risk += 4;
     if (/\bcurl\b.*\|\s*(ba)?sh\b/.test(command)) risk += 5;
     if (/\bwget\b.*\|\s*(ba)?sh\b/.test(command)) risk += 5;
+
+    // Pipe injection and command chaining (only outside quoted strings)
+    if (/;\s*rm|&&\s*rm|\|\s*rm/.test(command)) risk += 4;
+    // Command substitution — only flag when NOT inside single quotes
+    // Strip single-quoted segments first to avoid false positives on e.g. echo '$(date)'
+    const unquoted = command.replace(/'[^']*'/g, '');
+    if (/`[^`]+`|\$\([^)]+\)/.test(unquoted)) risk += 2;
 
     // Safe patterns reduce risk
     if (/\b(ls|cat|head|tail|grep|find|echo|pwd|whoami|date|uptime)\b/.test(command)) risk -= 2;
