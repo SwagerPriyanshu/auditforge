@@ -109,7 +109,8 @@ export class RiskEngine {
       score: rounded,
       components: { baseRisk, inputRisk, contextRisk },
       explanation: this.generateExplanation(toolName, input, rounded, baseRisk, inputRisk, contextRisk),
-      requiresApproval: rounded > 3,
+      // Require explicit approval for anything above "low" (score > 4)
+      requiresApproval: rounded > 4,
     };
   }
 
@@ -197,14 +198,15 @@ export class RiskEngine {
     let risk = 3;
 
     // Sensitive directories increase risk
-    if (path.includes(".env") || path.includes("secrets")) risk += 3;
+    if (path.includes(".env") || path.includes("secrets") || path.includes(".secret")) risk += 3;
     if (path.includes("config") || path.includes("etc")) risk += 2;
     if (path.includes("package.json") || path.includes("tsconfig")) risk += 2;
     if (path.startsWith("/tmp") || path.startsWith("/var/tmp")) risk -= 1;
     if (path.includes(".bak") || path.includes(".backup")) risk -= 1;
 
-    // Path traversal attempts
+    // Path traversal and null-byte injection attempts
     if (path.includes("..") || path.includes("~")) risk += 2;
+    if (path.includes("\0") || path.includes("%00")) risk += 4;
 
     return Math.min(10, Math.max(1, risk));
   }
@@ -221,6 +223,10 @@ export class RiskEngine {
     if (/\bDROP\b|\bDELETE\b|\bTRUNCATE\b/i.test(command)) risk += 4;
     if (/\bcurl\b.*\|\s*(ba)?sh\b/.test(command)) risk += 5;
     if (/\bwget\b.*\|\s*(ba)?sh\b/.test(command)) risk += 5;
+
+    // Pipe injection and command chaining
+    if (/;\s*rm|&&\s*rm|\|\s*rm/.test(command)) risk += 4;
+    if (/`[^`]+`|\$\([^)]+\)/.test(command)) risk += 2; // command substitution
 
     // Safe patterns reduce risk
     if (/\b(ls|cat|head|tail|grep|find|echo|pwd|whoami|date|uptime)\b/.test(command)) risk -= 2;
