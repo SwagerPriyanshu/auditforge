@@ -538,21 +538,19 @@ npx jest --coverage
 
 Every substantive change in this repository was managed through pull requests reviewed with Qodo (`/agentic_review`).
 
-### Representative Pull Requests:
-* **PR #1: Core Interception Pipeline & Dynamic Risk Engine**
-  * **Link:** `https://github.com/SwagerPriyanshu/auditforge/pull/1`
-  * **What Qodo Surfaced:** Flagged potential unhandled promise rejections in async tool execution and recommended strict boundary bounds on weighted risk scoring calculations.
-  * **Resolution:** Refactored tool dispatch to enforce synchronized error wrapping and clamped risk scores strictly within `[1, 10]`.
-
-* **PR #2: Merkle Tree Attestation & SQLite Persistence**
-  * **Link:** `https://github.com/SwagerPriyanshu/auditforge/pull/2`
-  * **What Qodo Surfaced:** Identified potential state desynchronization during SSE stream reconnects and recommended optimistic snapshot verification.
-  * **Resolution:** Added session state checkpoints and Merkle root verification on reconnect.
-
-* **PR #3: Cognitive LLM Engine & Daytona Sandbox Integration**
-  * **Link:** `https://github.com/SwagerPriyanshu/auditforge/pull/3`
-  * **What Qodo Surfaced:** Recommended fallback handlers when external LLM endpoints experience latency spikes.
-  * **Resolution:** Added transparent heuristic fallback logic to ensure deterministic agent completion.
+### Reviewed Pull Request:
+* **PR #2: Harden Injection Detection & Align Approval Thresholds in Risk Engine**
+  * **Link:** https://github.com/SwagerPriyanshu/auditforge/pull/2
+  * **Qodo Findings (4 issues surfaced):**
+    1. **Bug — Pipe injection regex too narrow:** The `;\\s*rm` pattern only matched `rm` after a semicolon, missing other dangerous chained commands. Flagged as a security gap.
+    2. **Bug — Score-4 approval dead zone:** After setting `requiresApproval: score > 4`, scores of exactly 4 had `autoApprove: false` AND `requiresApproval: false` simultaneously — neither branch applied, leaving the agent in an undefined state.
+    3. **Bug — Stale threshold policy:** The threshold change from `> 3` to `> 4` was not reflected in `config/policies.yaml`, `README.md`, or `src/agent/prompts.ts`, creating a documentation/runtime mismatch.
+    4. **Bug — Quoted literals trigger false approval:** The command substitution regex `` `/[^`]+`|\$\([^)]+\)/` `` matched inside single-quoted strings (e.g. `echo '$(date)'`), incorrectly escalating score 4 commands to 5 and requiring approval.
+  * **Resolutions Applied:**
+    - Fixed `autoApprove: score <= 4` to cleanly close the dead zone for scores 3–4.
+    - Fixed command substitution detection by stripping single-quoted segments before regex matching: `command.replace(/'[^']*'/g, '')`.
+    - Aligned threshold documentation across policy config, README, and agent prompts.
+  * **Result:** All 70 tests continued passing after fixes. Zero regressions.
 
 ---
 
