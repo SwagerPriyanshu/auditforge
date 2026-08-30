@@ -130,8 +130,9 @@ export class RiskEngine {
         `Base risk for ${toolName}: ${baseRisk}/10`,
         `Input risk: ${inputRisk}/10`,
       ],
-      autoApprove: score <= 2,
-      requiresApproval: score > 4, // aligned with score() — medium (5+) requires approval
+      // Scores 1-2: safe (auto-approve). 3-4: low (proceed, log). 5+: medium/high/critical (approval required).
+      autoApprove: score <= 4,
+      requiresApproval: score > 4,
       isCritical: score >= 8,
     };
   }
@@ -224,9 +225,12 @@ export class RiskEngine {
     if (/\bcurl\b.*\|\s*(ba)?sh\b/.test(command)) risk += 5;
     if (/\bwget\b.*\|\s*(ba)?sh\b/.test(command)) risk += 5;
 
-    // Pipe injection and command chaining
+    // Pipe injection and command chaining (only outside quoted strings)
     if (/;\s*rm|&&\s*rm|\|\s*rm/.test(command)) risk += 4;
-    if (/`[^`]+`|\$\([^)]+\)/.test(command)) risk += 2; // command substitution
+    // Command substitution — only flag when NOT inside single quotes
+    // Strip single-quoted segments first to avoid false positives on e.g. echo '$(date)'
+    const unquoted = command.replace(/'[^']*'/g, '');
+    if (/`[^`]+`|\$\([^)]+\)/.test(unquoted)) risk += 2;
 
     // Safe patterns reduce risk
     if (/\b(ls|cat|head|tail|grep|find|echo|pwd|whoami|date|uptime)\b/.test(command)) risk -= 2;
