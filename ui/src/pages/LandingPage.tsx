@@ -81,7 +81,7 @@ export function LandingPage() {
 
           <div className="flex items-center gap-3">
             <a
-              href="https://github.com/truefoundry/trueforge"
+              href="https://github.com/SwagerPriyanshu/auditforge"
               target="_blank"
               rel="noreferrer"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-300 hover:text-white transition-colors"
