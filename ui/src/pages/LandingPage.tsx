@@ -75,14 +75,6 @@ export function LandingPage() {
             <a href="#features" className="hover:text-white transition-colors">Key Features</a>
             <a href="#architecture" className="hover:text-white transition-colors text-indigo-400 font-bold">Architecture</a>
             <a href="#demo-scenarios" className="hover:text-white transition-colors">1-Click Demos</a>
-            <a
-              href="https://youtu.be/zcloRqNX8lc"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1 text-red-400 hover:text-red-300 font-bold transition-colors"
-            >
-              <Play className="w-3 h-3 fill-current" /> Demo Video
-            </a>
             <a href="#comparison" className="hover:text-white transition-colors">Comparison</a>
             <Link to="/harness" className="hover:text-white transition-colors">Runtime Monitor</Link>
           </div>
@@ -141,19 +133,10 @@ export function LandingPage() {
             </Link>
 
             <a
-              href="https://youtu.be/zcloRqNX8lc"
-              target="_blank"
-              rel="noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 rounded-xl text-xs sm:text-sm font-semibold transition-all backdrop-blur-md shadow-md hover:scale-105"
-            >
-              <Play className="w-4 h-4 fill-current text-red-400" /> Watch Demo Video (2.5m)
-            </a>
-
-            <a
               href="#demo-scenarios"
               className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-900/90 hover:bg-slate-800/90 text-slate-200 border border-white/[0.12] rounded-xl text-xs sm:text-sm font-semibold transition-all backdrop-blur-md shadow-md"
             >
-              <Sparkles className="w-4 h-4 text-emerald-400" /> 1-Click Demos
+              <Play className="w-4 h-4 text-emerald-400" /> Explore 1-Click Judge Demos
             </a>
           </div>
 
