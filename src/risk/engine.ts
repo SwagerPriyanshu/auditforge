@@ -131,7 +131,7 @@ export class RiskEngine {
         `Input risk: ${inputRisk}/10`,
       ],
       autoApprove: score <= 2,
-      requiresApproval: score > 3,
+      requiresApproval: score > 4, // aligned with score() — medium (5+) requires approval
       isCritical: score >= 8,
     };
   }
