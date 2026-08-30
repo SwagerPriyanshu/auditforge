@@ -31,7 +31,7 @@ export class LLMEngine {
     this.apiKey = config?.apiKey ?? process.env.OPENAI_API_KEY ?? "";
     this.baseUrl = (config?.baseUrl ?? process.env.OPENAI_BASE_URL ?? "https://integrate.api.nvidia.com/v1").replace(/\/+$/, "");
     this.model = config?.model ?? process.env.OPENAI_MODEL ?? "deepseek-ai/deepseek-v4-pro-0813";
-    this.timeoutMs = config?.timeoutMs ?? 25000;
+    this.timeoutMs = config?.timeoutMs ?? 3000;
   }
 
   isConfigured(): boolean {

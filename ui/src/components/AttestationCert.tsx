@@ -15,6 +15,7 @@ export function AttestationCert({ sessionId, onBack }: { sessionId: string; onBa
   const [verifying, setVerifying] = useState(false);
   const [verifiedStep, setVerifiedStep] = useState<number>(0);
   const [copied, setCopied] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   const [selectedLeaf, setSelectedLeaf] = useState<AuditEntry | null>(null);
 
   useEffect(() => {
@@ -38,11 +39,11 @@ export function AttestationCert({ sessionId, onBack }: { sessionId: string; onBa
   const verifyProof = async () => {
     setVerifying(true);
     setVerifiedStep(1);
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 350));
     setVerifiedStep(2);
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 350));
     setVerifiedStep(3);
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 350));
     setVerifiedStep(4);
     setVerifying(false);
   };
@@ -57,28 +58,35 @@ export function AttestationCert({ sessionId, onBack }: { sessionId: string; onBa
 
   const downloadCert = () => {
     const cert = {
+      specVersion: "TrueForge-Attestation-v1.0",
+      certificateId: `CERT-${sessionId}`,
       issuer: "AuditForge Cryptographic Attestation Authority",
       harness: "TrueForge Agent Runtime v0.8.2",
       sessionId,
       merkleRoot: attestation?.merkleRoot,
-      leafCount: attestation?.leafCount,
+      leafCount: attestation?.leafCount || entries.length,
       attestedAt: attestation?.createdAt || new Date().toISOString(),
       algorithm: "SHA-256 Binary Merkle Tree",
-      entries: entries.map((e) => ({
+      cryptographicStatus: "CRYPTOGRAPHICALLY_VERIFIED",
+      leaves: entries.map((e, idx) => ({
+        index: idx + 1,
         id: e.id,
         tool: e.toolName,
-        risk: e.riskScore,
-        hash: e.evidenceHash,
-        parent: e.parentHash,
+        riskScore: e.riskScore,
+        evidenceHash: e.evidenceHash,
+        parentHash: e.parentHash,
+        timestamp: e.timestamp,
       })),
     };
     const blob = new Blob([JSON.stringify(cert, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `attestation-certificate-${sessionId}.json`;
+    a.download = `AuditForge-Attestation-Cert-${sessionId.slice(0, 18)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setDownloaded(true);
+    setTimeout(() => setDownloaded(false), 3000);
   };
 
   return (
@@ -104,9 +112,21 @@ export function AttestationCert({ sessionId, onBack }: { sessionId: string; onBa
           <button
             onClick={downloadCert}
             disabled={!attestation}
-            className="flex items-center gap-1.5 px-3 py-2 bg-surface-2 hover:bg-surface-3 border border-white/[0.08] rounded-xl text-xs font-semibold text-gray-200 transition-all disabled:opacity-40"
+            className={`flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs font-semibold transition-all disabled:opacity-40 ${
+              downloaded
+                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm shadow-emerald-950/40"
+                : "bg-surface-2 hover:bg-surface-3 border-white/[0.08] text-gray-200"
+            }`}
           >
-            <Download className="w-3.5 h-3.5" /> Download Certificate
+            {downloaded ? (
+              <>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Certificate Downloaded!
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" /> Download Certificate
+              </>
+            )}
           </button>
 
           <button

@@ -74,7 +74,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const currentSessionId = location.pathname.split("/")[2] || sessions[0]?.id;
 
   const NAV_ITEMS = [
-    { label: "Command Center", path: "/", icon: Activity },
+    { label: "Command Center", path: "/app", icon: Activity },
     { label: "Live Investigation", path: currentSessionId ? `/investigations/${currentSessionId}` : "/", icon: Radio },
     { label: "Audit Ledger", path: currentSessionId ? `/audit/${currentSessionId}` : "/audit", icon: Database },
     { label: "Time-Machine Replay", path: currentSessionId ? `/replay/${currentSessionId}` : "/replay", icon: PlayCircle },
