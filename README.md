@@ -3,14 +3,18 @@
 > *"Because when your agent makes a mistake, 'I don't know' isn't an acceptable answer."*
 
 [![Built with TrueForge](https://img.shields.io/badge/Built%20with-TrueForge-blue)](https://github.com/truefoundry/trueforge)
+[![Demo Video](https://img.shields.io/badge/YouTube-Watch%20Demo%20Video-red?logo=youtube)](https://youtu.be/zcloRqNX8lc)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-70%20passing-brightgreen)](tests/)
+
+> 🎬 **Watch the Demo Video**: [https://youtu.be/zcloRqNX8lc](https://youtu.be/zcloRqNX8lc)
 
 ---
 
 ## 📋 Table of Contents
 
+- [🎬 Demo Video](#-demo-video)
 - [Problem](#-problem)
 - [Why Existing Solutions Aren't Enough](#-why-existing-solutions-arent-enough)
 - [Solution](#-solution)
@@ -28,6 +32,14 @@
 - [Qodo Code Review Evidence](#qodo-code-review-evidence)
 - [Team](#-team)
 - [License](#-license)
+
+---
+
+## 🎬 Demo Video
+
+[![AuditForge Demo Video](https://img.youtube.com/vi/zcloRqNX8lc/maxresdefault.jpg)](https://youtu.be/zcloRqNX8lc)
+
+▶️ **Watch the full walkthrough on YouTube**: [https://youtu.be/zcloRqNX8lc](https://youtu.be/zcloRqNX8lc)
 
 ---
 
